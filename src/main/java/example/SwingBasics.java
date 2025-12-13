@@ -220,6 +220,53 @@ public class SwingBasics {
         ventana.setVisible(true);
     }
 
+    public static void usandoCombinationLayout() {
+        JFrame ventana = new JFrame("CombinationLayout");
+        ventana.setSize(400, 300); //Tamaño: ancho alto
+        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ventana.setLayout(new BorderLayout());
+
+        JPanel topPanel = new JPanel();
+        topPanel.add(new JLabel("Resultado: "));
+        topPanel.add(new JTextField(10));
+
+        ventana.add(topPanel, BorderLayout.NORTH);
+
+        JPanel centerPanel = new JPanel(new GridLayout(4, 4, 5, 5));
+        centerPanel.add(new JButton("1"));
+        centerPanel.add(new JButton("2"));
+        centerPanel.add(new JButton("3"));
+        centerPanel.add(new JButton("4"));
+        centerPanel.add(new JButton("5"));
+        centerPanel.add(new JButton("6"));
+        centerPanel.add(new JButton("7"));
+        centerPanel.add(new JButton("8"));
+        centerPanel.add(new JButton("9"));
+        centerPanel.add(new JButton("0"));
+        centerPanel.add(new JButton("C"));
+
+        ventana.add(centerPanel, BorderLayout.CENTER);
+
+        ventana.setVisible(true);
+    }
+
+    public static void usandoJList() {
+
+        JFrame ventana = new JFrame("JList");
+        ventana.setSize(400, 300);
+        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        String[] fruitsList = new String[]{"apple", "orange", "pear", "lemon", "banana"};
+
+        JList<String> list =  new JList<>(fruitsList);
+        //Creamos un scroll que nos permita bajar hacia abajo en la lista
+        JScrollPane scrollPane = new JScrollPane(list);
+
+        ventana.add(scrollPane);
+
+        ventana.setVisible(true);
+    }
+
     public static void main(String[] args) {
         //Ejemplo1:
         //usandoJFrame();
@@ -236,6 +283,9 @@ public class SwingBasics {
         //calculadora();
 
         //usandoBorderLayout();
-        usandoBoxLayout();
+        //usandoBoxLayout();
+
+        //usandoCombinationLayout();
+        usandoJList();
     }
 }
