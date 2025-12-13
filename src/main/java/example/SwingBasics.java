@@ -1,6 +1,7 @@
 package example;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class SwingBasics {
@@ -259,10 +260,142 @@ public class SwingBasics {
         String[] fruitsList = new String[]{"apple", "orange", "pear", "lemon", "banana"};
 
         JList<String> list =  new JList<>(fruitsList);
-        //Creamos un scroll que nos permita bajar hacia abajo en la lista
+        //Creamos un panel scrolleable que nos permita bajar hacia abajo en la lista
         JScrollPane scrollPane = new JScrollPane(list);
 
         ventana.add(scrollPane);
+
+        ventana.setVisible(true);
+    }
+
+    public static void usandoJTable() {
+        JFrame ventana = new JFrame("JTable");
+        ventana.setSize(400, 300);
+        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        String[][] data = new String[][]{
+            {"1", "Juan", "25"}, {"2", "José", "35"}, {"3", "Sofía", "18"},
+        };
+
+        String[] columns = new String[]{"id", "nombre", "edad"};
+
+        JTable jTable = new JTable(data, columns);
+        JScrollPane scrollPane = new JScrollPane(jTable);
+        ventana.add(scrollPane);
+
+        ventana.setVisible(true);
+    }
+
+    public static void usandoListaInteractiva() {
+
+        JFrame ventana = new JFrame("JList + JButton");
+        ventana.setSize(400, 300);
+        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ventana.setLayout(new BorderLayout(5,5));
+
+        //Modelo para crear datos internos que ocupa un espacio vacío hasta que se le añadan datos
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+
+        JList<String> list =  new JList<>(listModel);
+        //Creamos un panel scrolleable que nos permita bajar hacia abajo en la lista
+        JScrollPane scrollPane = new JScrollPane(list);
+        ventana.add(scrollPane, BorderLayout.CENTER);
+
+        JTextField field = new JTextField();
+        JButton buttonAdd = new JButton("Add");
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(field, BorderLayout.CENTER);
+        panel.add(buttonAdd, BorderLayout.EAST);
+        ventana.add(panel, BorderLayout.NORTH);
+
+        JButton buttonShow = new JButton("Show");
+        ventana.add(buttonShow, BorderLayout.SOUTH);
+
+        //Add event
+        buttonAdd.addActionListener(e -> {
+            String texto = field.getText();
+            if(!texto.isEmpty()) {
+                listModel.addElement(texto);
+            }
+        });
+
+        //Show selection
+        buttonShow.addActionListener(e -> {
+            String select =  list.getSelectedValue();
+            if(select!=null) {
+                JOptionPane.showMessageDialog(ventana, "🔘 You have selected: " + select);
+            } else {
+                JOptionPane.showMessageDialog(ventana, "❌ You have not selected any element ");
+
+            }
+        });
+
+        ventana.setVisible(true);
+    }
+
+    public static void usandoTablaInteractiva() {
+
+        JFrame ventana = new JFrame("JTable interactiva");
+        ventana.setSize(400, 300);
+        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ventana.setLayout(new BorderLayout(5,5));
+
+        String[] columns = new String[]{"id", "tarea"};
+
+        //Panel superior
+        JTextField field = new JTextField();
+        JButton buttonAdd = new JButton("Add task");
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(field, BorderLayout.CENTER);
+        panel.add(buttonAdd, BorderLayout.EAST);
+        ventana.add(panel, BorderLayout.NORTH);
+
+        //Panel central
+        DefaultTableModel model = new DefaultTableModel(columns, 0);
+        JTable jTable = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(jTable);
+        ventana.add(scrollPane, BorderLayout.CENTER);
+
+        //Panel inferior
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        JButton editButton = new JButton("Edit");
+        JButton deleteButton = new JButton("Delete");
+        buttonPanel.add(editButton);
+        buttonPanel.add(deleteButton);
+        ventana.add(buttonPanel, BorderLayout.SOUTH);
+
+        //Add event
+        buttonAdd.addActionListener(e -> {
+            String task = field.getText().trim();
+            if(!task.isEmpty()) {
+                int id = model.getRowCount() + 1;
+                model.addRow(new Object[]{id, task});
+                field.setText("");
+            }
+        });
+
+        //Edit event
+        editButton.addActionListener(e -> {
+           int row =  jTable.getSelectedRow();
+           if(row!=-1) {
+               String newTask = JOptionPane.showInputDialog(ventana, "Editar tarea " + model.getValueAt(row, 1));
+               if(newTask!=null && !newTask.trim().isEmpty()) {
+                   model.setValueAt(newTask, row, 1);
+               }
+           } else {
+               JOptionPane.showMessageDialog(ventana, "Select a task to be edited, please");
+           }
+        });
+
+        //Delete event
+        deleteButton.addActionListener(e -> {
+            int row =  jTable.getSelectedRow();
+            if(row!=-1) {
+                model.removeRow(row);
+            } else {
+                JOptionPane.showMessageDialog(ventana, "Select a task to be deleted, please");
+            }
+        });
 
         ventana.setVisible(true);
     }
@@ -286,6 +419,10 @@ public class SwingBasics {
         //usandoBoxLayout();
 
         //usandoCombinationLayout();
-        usandoJList();
+        //usandoJList();
+        //usandoJTable();
+
+        //usandoListaInteractiva();
+        usandoTablaInteractiva();
     }
 }
