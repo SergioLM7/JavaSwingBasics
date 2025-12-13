@@ -3,7 +3,7 @@ package example;
 import javax.swing.*;
 import java.awt.*;
 
-public class TeoriaSwing {
+public class SwingBasics {
 
     //¿Qué es Java Swing?
 
