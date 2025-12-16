@@ -3,6 +3,10 @@ package example;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 public class SwingBasics {
 
@@ -340,7 +344,7 @@ public class SwingBasics {
         ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ventana.setLayout(new BorderLayout(5,5));
 
-        String[] columns = new String[]{"id", "tarea"};
+        String[] columns = new String[]{"id", "task"};
 
         //Panel superior
         JTextField field = new JTextField();
@@ -376,15 +380,15 @@ public class SwingBasics {
 
         //Edit event
         editButton.addActionListener(e -> {
-           int row =  jTable.getSelectedRow();
-           if(row!=-1) {
-               String newTask = JOptionPane.showInputDialog(ventana, "Editar tarea " + model.getValueAt(row, 1));
-               if(newTask!=null && !newTask.trim().isEmpty()) {
-                   model.setValueAt(newTask, row, 1);
-               }
-           } else {
-               JOptionPane.showMessageDialog(ventana, "Select a task to be edited, please");
-           }
+            int row =  jTable.getSelectedRow();
+            if(row!=-1) {
+                String newTask = JOptionPane.showInputDialog(ventana, "Editar tarea " + model.getValueAt(row, 1));
+                if(newTask!=null && !newTask.trim().isEmpty()) {
+                    model.setValueAt(newTask, row, 1);
+                }
+            } else {
+                JOptionPane.showMessageDialog(ventana, "Select a task to be edited, please");
+            }
         });
 
         //Delete event
@@ -400,29 +404,102 @@ public class SwingBasics {
         ventana.setVisible(true);
     }
 
-    public static void main(String[] args) {
-        //Ejemplo1:
-        //usandoJFrame();
+    public static void usandoTablaInteractivaConArchivo() {
 
-        //Ejemplo2:
-        //usandoJLabel();
+        JFrame ventana = new JFrame("JTable interactiva");
+        ventana.setSize(400, 300);
+        ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ventana.setLayout(new BorderLayout(5,5));
 
-        //Ejemplo3:
-        //usandoJButton();
+        String[] columns = new String[]{"id", "task"};
 
-        //Ejemplo4
-        //useJTextField();
+        //Panel superior
+        JTextField field = new JTextField();
+        JButton buttonAdd = new JButton("Add task");
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(field, BorderLayout.CENTER);
+        panel.add(buttonAdd, BorderLayout.EAST);
+        ventana.add(panel, BorderLayout.NORTH);
 
-        //calculadora();
+        //Panel central
+        DefaultTableModel model = new DefaultTableModel(columns, 0);
+        JTable jTable = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(jTable);
+        ventana.add(scrollPane, BorderLayout.CENTER);
 
-        //usandoBorderLayout();
-        //usandoBoxLayout();
+        //Panel inferior
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        JButton editButton = new JButton("Edit");
+        JButton deleteButton = new JButton("Delete");
+        buttonPanel.add(editButton);
+        buttonPanel.add(deleteButton);
+        ventana.add(buttonPanel, BorderLayout.SOUTH);
 
-        //usandoCombinationLayout();
-        //usandoJList();
-        //usandoJTable();
+        File file = new File("tasks.txt");
+        if(file.exists()) {
+            try(Scanner sc = new Scanner(file)) {
+                while(sc.hasNextLine()) {
+                    String line = sc.nextLine();
+                    model.addRow(new Object[]{model.getRowCount() + 1, line});
+                }
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
-        //usandoListaInteractiva();
-        usandoTablaInteractiva();
+        //Add event
+        buttonAdd.addActionListener(e -> {
+            String task = field.getText().trim();
+            if(!task.isEmpty()) {
+                int id = model.getRowCount() + 1;
+                model.addRow(new Object[]{id, task});
+                field.setText("");
+                saveTasks(model, file);
+            }
+        });
+
+        //Edit event
+        editButton.addActionListener(e -> {
+           int row =  jTable.getSelectedRow();
+           if(row!=-1) {
+               String newTask = JOptionPane.showInputDialog(ventana, "Editar tarea " + model.getValueAt(row, 1));
+               if(newTask!=null && !newTask.trim().isEmpty()) {
+                   model.setValueAt(newTask, row, 1);
+                   saveTasks(model, file);
+               }
+           } else {
+               JOptionPane.showMessageDialog(ventana, "Select a task to be edited, please");
+           }
+        });
+
+        //Delete event
+        deleteButton.addActionListener(e -> {
+            int row =  jTable.getSelectedRow();
+            if(row!=-1) {
+                model.removeRow(row);
+                updateIDs(model);
+                saveTasks(model, file);
+            } else {
+                JOptionPane.showMessageDialog(ventana, "Select a task to be deleted, please");
+            }
+        });
+
+        ventana.setVisible(true);
+    }
+
+    public static void saveTasks(DefaultTableModel model, File file) {
+        try (PrintWriter pw = new PrintWriter(file)) {
+            for(int i = 0; i < model.getRowCount(); i++) {
+                pw.println(model.getValueAt(i, 1));
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void updateIDs(DefaultTableModel model) {
+        for(int i = 0; i < model.getRowCount(); i++) {
+            model.setValueAt(i+1, i, 0);
+        }
     }
 }
