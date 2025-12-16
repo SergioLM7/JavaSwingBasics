@@ -406,17 +406,21 @@ public class SwingBasics {
 
     public static void usandoTablaInteractivaConArchivo() {
 
-        JFrame ventana = new JFrame("JTable interactiva");
+        JFrame ventana = new JFrame("Gestor de Tareas");
         ventana.setSize(400, 300);
         ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ventana.setLayout(new BorderLayout(5,5));
+        ventana.getContentPane().setBackground(new Color(230, 230, 250));
 
-        String[] columns = new String[]{"id", "task"};
+        String[] columns = new String[]{"ID", "Task"};
 
         //Panel superior
         JTextField field = new JTextField();
         JButton buttonAdd = new JButton("Add task");
-        JPanel panel = new JPanel(new BorderLayout());
+        JPanel panel = new JPanel(new BorderLayout(5, 5));
+        panel.setBackground(new Color(200, 200, 255));
+        buttonAdd.setBackground(new Color(100, 149, 237));
+        buttonAdd.setForeground(Color.BLUE);
         panel.add(field, BorderLayout.CENTER);
         panel.add(buttonAdd, BorderLayout.EAST);
         ventana.add(panel, BorderLayout.NORTH);
@@ -424,6 +428,8 @@ public class SwingBasics {
         //Panel central
         DefaultTableModel model = new DefaultTableModel(columns, 0);
         JTable jTable = new JTable(model);
+        jTable.setFont(new Font("Arial", Font.BOLD, 16));
+        jTable.setRowHeight(20);
         JScrollPane scrollPane = new JScrollPane(jTable);
         ventana.add(scrollPane, BorderLayout.CENTER);
 
