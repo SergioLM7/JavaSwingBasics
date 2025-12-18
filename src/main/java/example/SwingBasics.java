@@ -1,6 +1,7 @@
 package example;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.File;
@@ -412,7 +413,7 @@ public class SwingBasics {
         ventana.setLayout(new BorderLayout(5,5));
         ventana.getContentPane().setBackground(new Color(230, 230, 250));
 
-        String[] columns = new String[]{"ID", "Task"};
+        String[] columns = new String[]{"ID", "Task", "Done"};
 
         //Panel superior
         JTextField field = new JTextField();
@@ -426,10 +427,50 @@ public class SwingBasics {
         ventana.add(panel, BorderLayout.NORTH);
 
         //Panel central
-        DefaultTableModel model = new DefaultTableModel(columns, 0);
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                if(columnIndex==2) {
+                    return Boolean.class; //Checkbox
+                }
+                return String.class;
+            }
+
+            //Cambiamos la posiblidad de editar cada celda, a que solo se pueda modificar las de la columna 2 (checkbox)
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 2;
+            }
+        };
         JTable jTable = new JTable(model);
         jTable.setFont(new Font("Arial", Font.BOLD, 16));
         jTable.setRowHeight(20);
+        //Creación de un componente que vamos a renderizar de nuevo
+        //Modificamos el renderizado de las celdas de este objeto
+        jTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c  = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                Boolean completada = (Boolean) jTable.getValueAt(row, 2);
+
+                if(completada!=null && completada) {
+                    c.setForeground(Color.green);
+                    c.setFont(c.getFont().deriveFont(Font.ITALIC));
+                } else {
+                    c.setForeground(Color.gray);
+                    c.setFont(c.getFont().deriveFont(Font.PLAIN));
+                }
+
+                if(isSelected) {
+                    c.setBackground(new Color(173, 216, 230));
+                } else {
+                    c.setBackground(Color.white);
+                }
+
+                return c;
+            }
+        });
+
         JScrollPane scrollPane = new JScrollPane(jTable);
         ventana.add(scrollPane, BorderLayout.CENTER);
 
